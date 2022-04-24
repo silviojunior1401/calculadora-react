@@ -19,6 +19,7 @@ code {
 
 * {
   font-family: 'RobotoMono', monospace;
+  font-display: swap;
 }
 
 body {
