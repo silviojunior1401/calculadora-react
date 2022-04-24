@@ -39,7 +39,11 @@ const Calculator = (props) => {
 					break
 				default:
 					values[0] = state.values[0]
-			} 
+			}
+			
+			if(isNaN(values[0]) || !isFinite(values[0])) {
+				return
+			}
 
 			values[1] = 0
 
