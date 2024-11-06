@@ -1,53 +1,53 @@
 name: CI/CD Calculadora React
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
 
 jobs:
-  construir-e-publicar:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
+    construir-e-publicar:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
 
-    - name: Configurar Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '22'
+            - name: Configurar Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "20"
 
-    - name: Instalar dependências
-      run: npm ci
+            - name: Instalar dependências
+              run: npm ci
 
-    - name: Construir Calculadora React
-      run: npm run build
+            - name: Construir Calculadora React
+              run: npm run build
 
-    - name: Login no DockerHub
-      uses: docker/login-action@v2
-      with:
-        username: silviojunior1401
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-    
-    - name: Construir e publicar imagem Docker
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        push: true
-        tags: silviojunior1401/calculadora-react:latest
+            - name: Login no DockerHub
+              uses: docker/login-action@v2
+              with:
+                  username: silviojunior1401
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  implantar:
-    needs: construir-e-publicar
-    runs-on: ubuntu-latest
-    steps:
-    - name: Implantar no servidor remoto
-      uses: appleboy/ssh-action@master
-      with:
-        host: 201.23.3.86
-        username: aluno
-        key: ${{ secrets.SERVER_SSH_KEY }}
-        script: |
-          docker pull silviojunior1401/calculadora-react:latest
-          docker stop calculadora-react || true
-          docker rm calculadora-react || true
-          docker run -d --name calculadora-react -p 8105:80 silviojunior1401/calculadora-react:latest
+            - name: Construir e publicar imagem Docker
+              uses: docker/build-push-action@v4
+              with:
+                  context: .
+                  push: true
+                  tags: silviojunior1401/calculadora-react:latest
+
+    implantar:
+        needs: construir-e-publicar
+        runs-on: ubuntu-latest
+        steps:
+            - name: Implantar no servidor remoto
+              uses: appleboy/ssh-action@master
+              with:
+                  host: 201.23.3.86
+                  username: aluno
+                  key: ${{ secrets.SERVER_SSH_KEY }}
+                  script: |
+                      docker pull silviojunior1401/calculadora-react:latest
+                      docker stop calculadora-react || true
+                      docker rm calculadora-react || true
+                      docker run -d --name calculadora-react -p 8105:80 silviojunior1401/calculadora-react:latest
